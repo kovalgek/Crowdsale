@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
-import "./Ownable.sol";
+import "./../Ownable.sol";
 
 contract SimpleCoin is Ownable {
     mapping(address => uint256) coinBalance;
@@ -25,7 +25,7 @@ contract SimpleCoin is Ownable {
         emit FrozenAccount(_target, _freeze);
     }
 
-    function transfer(address _to, uint256 _amount) public {
+    function transfer(address _to, uint256 _amount) virtual public {
         require(coinBalance[msg.sender] > _amount);
         require(coinBalance[_to] + _amount >= coinBalance[_to]);
 
@@ -39,7 +39,7 @@ contract SimpleCoin is Ownable {
         allowance[msg.sender][_authorizedAccount] = _allowance;
     }
 
-    function transferFrom(address _from, address _to, uint256 _amount) public {
+    function transferFrom(address _from, address _to, uint256 _amount) virtual public {
         require(coinBalance[_from] > _amount);
         require(coinBalance[_to] + _amount >= coinBalance[_to]);
         require(_amount <= allowance[_from][msg.sender]);
