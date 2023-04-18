@@ -6,7 +6,6 @@ describe("SimpleCoint", function() {
 
     async function deploySimpleCoinFixture() {
 
-        // Contracts are deployed using the first signer/account by default
         const [owner, account1, account2] = await ethers.getSigners();
     
         const TEN_COINS = 10;
