@@ -4,9 +4,8 @@ const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
 describe("ReleasableSimpleCoin", function() {
 
-    async function deploySimpleCoinFixture() {
+    async function deployReleasableSimpleCoinFixture() {
 
-        // Contracts are deployed using the first signer/account by default
         const [owner, account1, account2] = await ethers.getSigners();
     
         const TEN_COINS = 10;
@@ -19,14 +18,14 @@ describe("ReleasableSimpleCoin", function() {
       }
 
     it("Should release contract before usage", async function() {
-        const { releasableSimpleCoin, owner, account1, account2} = await loadFixture(deploySimpleCoinFixture);
+        const { releasableSimpleCoin, owner, account1, account2} = await loadFixture(deployReleasableSimpleCoinFixture);
 
         await expect(releasableSimpleCoin.transfer(account1.address, 2)).to.be.revertedWith("Contract isn't released yet");
         await expect(releasableSimpleCoin.transfer(account2.address, 2)).to.be.revertedWith("Contract isn't released yet");
     });
 
     it("Should be able to use contract after release", async function() {
-        const { releasableSimpleCoin, owner, account1, account2} = await loadFixture(deploySimpleCoinFixture);
+        const { releasableSimpleCoin, owner, account1, account2} = await loadFixture(deployReleasableSimpleCoinFixture);
 
         await releasableSimpleCoin.release();
 

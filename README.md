@@ -1,6 +1,6 @@
-# Sample Hardhat Project
+# Crowdsale project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+An example from book "Building Etherium Dapps" that I extended and added tests.
 
 Try running some of the following tasks:
 

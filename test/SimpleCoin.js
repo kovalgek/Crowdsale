@@ -15,7 +15,7 @@ describe("SimpleCoint", function() {
         const simpleCoin = await SimpleCoin.deploy(initialSupply);
     
         return { simpleCoin, initialSupply, owner, account1, account2 };
-      }
+    }
 
     it("Should init owner with coins", async function() {
         const { simpleCoin, owner} = await loadFixture(deploySimpleCoinFixture);
