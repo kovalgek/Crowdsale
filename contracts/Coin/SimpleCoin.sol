@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
-import "./../Ownable.sol";
+import "./../Utilities/Ownable.sol";
 
+/**
+ * @title Simple ownable Token.
+ *
+ * Allows to create and control minted coins.
+ */
 contract SimpleCoin is Ownable {
     mapping(address => uint256) private coinBalance;
     mapping(address => mapping(address => uint256)) private allowance;

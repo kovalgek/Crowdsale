@@ -1,20 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
-import "./../Ownable.sol";
+import "./../Utilities/Pausable.sol";
+import "./../Utilities/Destructible.sol";
 import "./../Coin/ReleasableSimpleCoin.sol";
 
 /**
  * @title Contract for controling crowdsale.
  */
-contract SimpleCrowdsale is Ownable {
+contract SimpleCrowdsale is Pausable, Destructible {
 
     uint256 private startTime;
     uint256 private endTime;
-    uint256 private weiTokenPrice;
+    uint256 internal weiTokenPrice;
     uint256 private weiInvestmentObjective;
     mapping(address => uint256) private investmentAmountOf;
-    uint256 private investmentReceived;
+    uint256 internal investmentReceived;
     uint256 private investmentRefunded;
     bool private isFinalized;
     bool private isRefundingAllowed;
@@ -123,7 +124,7 @@ contract SimpleCrowdsale is Ownable {
         crowdsaleToken.mint(_beneficiary, numberOfTokens);
     }
 
-    function calculateNumberOfTokens(uint256 _investment) internal view returns (uint256) {
+    function calculateNumberOfTokens(uint256 _investment) internal virtual returns (uint256) {
         return _investment / weiTokenPrice;
     }
 }
