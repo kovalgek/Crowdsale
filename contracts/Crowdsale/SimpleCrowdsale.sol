@@ -4,11 +4,12 @@ pragma solidity ^0.8.17;
 import "./../Utilities/Pausable.sol";
 import "./../Utilities/Destructible.sol";
 import "./../Coin/ReleasableSimpleCoin.sol";
+import "./../FundingStrategy/FundingLimitStrategy.sol";
 
 /**
  * @title Contract for controling crowdsale.
  */
-contract SimpleCrowdsale is Pausable, Destructible {
+abstract contract SimpleCrowdsale is Pausable, Destructible {
 
     uint256 private startTime;
     uint256 private endTime;
@@ -20,14 +21,15 @@ contract SimpleCrowdsale is Pausable, Destructible {
     bool private isFinalized;
     bool private isRefundingAllowed;
     ReleasableSimpleCoin private crowdsaleToken;
+    FundingLimitStrategy internal fundingLimitStrategy;
 
     event LogInvestment(address indexed _investor, uint256 _value);
     event LogTokenAssignment(address indexed _investor, uint256 _tokens);
     event Refund(address investor, uint256 value);
 
-    /// ------------------------------------------
-    /// Public methods
-    /// ------------------------------------------
+    /// ----------------
+    /// Public methods |
+    /// ----------------
 
     /**
     * @notice Constructs SimpleCrowdsale contract.
@@ -36,7 +38,8 @@ contract SimpleCrowdsale is Pausable, Destructible {
     * @param _weiTokenPrice price of token in wei,
     * @param _etherInvestmentObjective target sum of investements for finishing crowdsale.
     */
-    constructor(uint256 _startTime, uint256 _endTime, uint256 _weiTokenPrice, uint256 _etherInvestmentObjective) {
+    constructor(uint256 _startTime, uint256 _endTime,
+                uint256 _weiTokenPrice, uint256 _etherInvestmentObjective) {
         require(_startTime >= block.timestamp);
         require(_startTime <= _endTime);
         require(_weiTokenPrice != 0);
@@ -46,9 +49,11 @@ contract SimpleCrowdsale is Pausable, Destructible {
         endTime = _endTime;
         weiTokenPrice = _weiTokenPrice;
         weiInvestmentObjective = _etherInvestmentObjective * 1000000000000000000;
-        crowdsaleToken = new ReleasableSimpleCoin(0);
         isFinalized = false;
         isRefundingAllowed = false;
+
+        crowdsaleToken = new ReleasableSimpleCoin(0);
+        fundingLimitStrategy = createFundingLimitStrategy();
     }
 
     /**
@@ -109,14 +114,15 @@ contract SimpleCrowdsale is Pausable, Destructible {
         emit Refund(investor, investment);
     }
     
-    /// ------------------------------------------
-    /// Internal methods
-    /// ------------------------------------------
+    /// -----------------
+    /// Internal methods|
+    /// -----------------
 
     function isValidInvestment(uint256 _investment) internal view returns (bool) {
         bool nonZeroInvestment = _investment != 0;
         bool withinCrowdsalePeriod = block.timestamp >= startTime && block.timestamp <= endTime;
-        return nonZeroInvestment && withinCrowdsalePeriod;
+        bool isFullInvestmentWithinLimit = fundingLimitStrategy.isFullInvestmentWithinLimit(_investment, investmentReceived);
+        return nonZeroInvestment && withinCrowdsalePeriod && isFullInvestmentWithinLimit;
     }
 
     function assignTokens(address _beneficiary, uint256 _investment) internal {
@@ -124,7 +130,7 @@ contract SimpleCrowdsale is Pausable, Destructible {
         crowdsaleToken.mint(_beneficiary, numberOfTokens);
     }
 
-    function calculateNumberOfTokens(uint256 _investment) internal virtual returns (uint256) {
-        return _investment / weiTokenPrice;
-    }
+    function calculateNumberOfTokens(uint256 _investment) internal virtual returns (uint256);
+
+    function createFundingLimitStrategy() internal virtual returns (FundingLimitStrategy);
 }

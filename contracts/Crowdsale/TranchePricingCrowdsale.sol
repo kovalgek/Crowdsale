@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "./SimpleCrowdsale.sol";
 
-contract TranchePricingCrowdsale is SimpleCrowdsale  {
+abstract contract TranchePricingCrowdsale is SimpleCrowdsale  {
     
     struct Tranche {
         uint256 weiHighLimit;
