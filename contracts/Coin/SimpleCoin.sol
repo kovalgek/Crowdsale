@@ -27,7 +27,7 @@ contract SimpleCoin is Ownable {
     * @param _recipient an account that receives coins,
     * @param _mintedAmount: an amounted of received coins.
     */
-    function mint(address _recipient, uint256 _mintedAmount) public onlyOwner {
+    function mint(address _recipient, uint256 _mintedAmount) public virtual onlyOwner {
         coinBalance[_recipient] += _mintedAmount;
         emit Transfer(owner, _recipient, _mintedAmount);
     }

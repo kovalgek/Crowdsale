@@ -12,7 +12,7 @@ describe("CappedFixedPricingCrowdsale", function() {
         const startTime = await time.latest() + HOUR_IN_SECS;
         const endTime = startTime + HOUR_IN_SECS;
         const weiTokenPrice = 10;
-        const etherInvestmentObjective = 100;
+        const etherInvestmentObjective = 10;
 
         const CappedFixedPricingCrowdsale = await ethers.getContractFactory("CappedFixedPricingCrowdsale");
         const cappedFixedPricingCrowdsale = await CappedFixedPricingCrowdsale.deploy(startTime, endTime, weiTokenPrice, etherInvestmentObjective);
@@ -45,7 +45,7 @@ describe("CappedFixedPricingCrowdsale", function() {
     it("Should rever when enough investment", async function() {
         const { cappedFixedPricingCrowdsale, startTime} = await loadFixture(deployCappedFixedPricingCrowdsaleFixture);
 
-        let investment = ethers.utils.parseUnits("1000", "ether");
+        let investment = ethers.utils.parseUnits("50", "ether");
 
         await time.increaseTo(startTime);
 
@@ -74,6 +74,25 @@ describe("CappedFixedPricingCrowdsale", function() {
         .to.be.revertedWith("Can't finalize twice");
     });
 
+    it("Shouldn allow to release", async function() {
+        const { cappedFixedPricingCrowdsale, startTime, endTime } = await loadFixture(deployCappedFixedPricingCrowdsaleFixture);
+
+        await time.increaseTo(startTime);
+
+        let investment = ethers.utils.parseUnits("11", "ether");
+        await cappedFixedPricingCrowdsale.invest({ value: investment });
+
+        await time.increaseTo(endTime);
+
+        await cappedFixedPricingCrowdsale.finalize();
+
+        await expect(cappedFixedPricingCrowdsale.finalize())
+        .to.be.revertedWith("Can't finalize twice");
+
+        await expect(cappedFixedPricingCrowdsale.refund())
+        .to.be.revertedWith("Refunding isn't allowed yet");
+    });
+
     it("Shouldn't allow to refund when contract isn't finalized", async function() {
         const { cappedFixedPricingCrowdsale } = await loadFixture(deployCappedFixedPricingCrowdsaleFixture);
 
@@ -97,7 +116,7 @@ describe("CappedFixedPricingCrowdsale", function() {
 
         await time.increaseTo(startTime);
 
-        let investment = ethers.utils.parseUnits("99", "ether");
+        let investment = ethers.utils.parseUnits("9", "ether");
         await cappedFixedPricingCrowdsale.invest({ value: investment });
 
         await time.increaseTo(endTime);
@@ -107,5 +126,5 @@ describe("CappedFixedPricingCrowdsale", function() {
         await expect(cappedFixedPricingCrowdsale.refund())
         .to.emit(cappedFixedPricingCrowdsale, "Refund")
         .withArgs(owner.address, investment);
-    });    
+    });
 });

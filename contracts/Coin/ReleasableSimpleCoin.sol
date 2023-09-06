@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.17;
 
+import "./ReleasableToken.sol";
 import "./SimpleCoin.sol";
 import "./../Utilities/Pausable.sol";
 import "./../Utilities/Destructible.sol";
 
-contract ReleasableSimpleCoin is SimpleCoin, Pausable, Destructible {
+contract ReleasableSimpleCoin is ReleasableToken, SimpleCoin, Pausable, Destructible {
     
     bool private released = false; 
 
@@ -30,12 +31,16 @@ contract ReleasableSimpleCoin is SimpleCoin, Pausable, Destructible {
         released = true;
     }
 
+    function mint(address _recipient, uint256 _mintedAmount) public override(ReleasableToken, SimpleCoin) onlyOwner {
+        super.mint(_recipient, _mintedAmount);
+    }
+
     /**
     * @notice Transfers coins from sender to another account when contract released.
     * @param _to an account that receives coins,
     * @param _amount: an amount of transfered coins.
     */
-    function transfer(address _to, uint256 _amount) public override isReleased {
+    function transfer(address _to, uint256 _amount) public override(ReleasableToken, SimpleCoin) isReleased {
         super.transfer(_to, _amount);
     }
 

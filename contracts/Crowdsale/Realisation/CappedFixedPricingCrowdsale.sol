@@ -26,6 +26,6 @@ contract CappedFixedPricingCrowdsale is FixedPricingCrowdsale {
     /// -----------------
 
     function createFundingLimitStrategy() internal override returns (FundingLimitStrategy) {
-        return new CappedFundingStrategy(100 * 1000000000000000000);
+        return new CappedFundingStrategy(12 * 1000000000000000000);
     }
 }

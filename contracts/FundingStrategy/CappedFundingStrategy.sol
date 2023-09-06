@@ -16,7 +16,6 @@ contract CappedFundingStrategy is FundingLimitStrategy {
     * @param _fundingCup limit in wei.
     */
     constructor (uint256 _fundingCup) {
-        require(_fundingCup > 0);
         fundingCup = _fundingCup;
     }
 

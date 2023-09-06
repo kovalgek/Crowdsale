@@ -3,6 +3,9 @@ pragma solidity ^0.8.17;
 
 import "./SimpleCrowdsale.sol";
 
+/**
+ * @title Contract for controling crowdsale that uses dynamic number of tokens.
+ */
 abstract contract TranchePricingCrowdsale is SimpleCrowdsale  {
     
     struct Tranche {
@@ -10,9 +13,19 @@ abstract contract TranchePricingCrowdsale is SimpleCrowdsale  {
         uint256 weiTokenPrice;
     }
     
-    mapping(uint256 => Tranche) public trancheStructure;
-    uint256 public currentTrancheLevel;
+    mapping(uint256 => Tranche) private trancheStructure;
+    uint256 private currentTrancheLevel;
 
+    /// ----------------
+    /// Public methods |
+    /// ----------------
+
+    /**
+    * @notice Constructs SimpleCrowdsale contract.
+    * @param _startTime time when crowdsale starts,
+    * @param _endTime time when crowdsale ends,
+    * @param _etherInvestmentObjective target sum of investements for finishing crowdsale.
+    */
     constructor(uint256 _startTime, uint256 _endTime, uint256 _etherInvestmentObjective) 
         SimpleCrowdsale(_startTime, _endTime,  1, _etherInvestmentObjective) {
             
@@ -24,6 +37,10 @@ abstract contract TranchePricingCrowdsale is SimpleCrowdsale  {
         currentTrancheLevel = 0;
     } 
     
+    /// -----------------
+    /// Internal methods|
+    /// -----------------
+
     function calculateNumberOfTokens(uint256 investment) override internal returns (uint256) {
         updateCurrentTrancheAndPrice();
         return investment / weiTokenPrice; 

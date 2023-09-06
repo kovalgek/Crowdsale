@@ -20,7 +20,7 @@ abstract contract SimpleCrowdsale is Pausable, Destructible {
     uint256 private investmentRefunded;
     bool private isFinalized;
     bool private isRefundingAllowed;
-    ReleasableSimpleCoin private crowdsaleToken;
+    ReleasableToken private crowdsaleToken;
     FundingLimitStrategy internal fundingLimitStrategy;
 
     event LogInvestment(address indexed _investor, uint256 _value);
@@ -52,7 +52,7 @@ abstract contract SimpleCrowdsale is Pausable, Destructible {
         isFinalized = false;
         isRefundingAllowed = false;
 
-        crowdsaleToken = new ReleasableSimpleCoin(0);
+        crowdsaleToken = createToken();
         fundingLimitStrategy = createFundingLimitStrategy();
     }
 
@@ -133,4 +133,8 @@ abstract contract SimpleCrowdsale is Pausable, Destructible {
     function calculateNumberOfTokens(uint256 _investment) internal virtual returns (uint256);
 
     function createFundingLimitStrategy() internal virtual returns (FundingLimitStrategy);
+
+    function createToken() internal returns (ReleasableToken) {
+        return new ReleasableSimpleCoin(0);
+    }
 }

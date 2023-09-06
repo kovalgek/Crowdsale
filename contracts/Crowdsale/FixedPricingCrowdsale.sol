@@ -3,6 +3,9 @@ pragma solidity ^0.8.17;
 
 import "./SimpleCrowdsale.sol";
 
+/**
+ * @title Contract for controling crowdsale that uses fixec number of tokens.
+ */
 abstract contract FixedPricingCrowdsale is SimpleCrowdsale {
 
     /// ----------------
